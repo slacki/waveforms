@@ -1,1 +1,0 @@
-scp -r waveforms-proxy/ root@116.203.81.75:/root/
