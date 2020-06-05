@@ -17,12 +17,27 @@ type Image128 struct {
 	bounds image.Rectangle
 }
 
+// ColorModel returns the Image's color model.
 func (img *Image128) ColorModel() color.Model {
 	return color.RGBA64Model
 }
 
+// Bounds returns the domain for which At can return non-zero color.
+// The bounds do not necessarily contain the point (0, 0).
 func (img *Image128) Bounds() image.Rectangle {
 	return img.bounds
+}
+
+// At returns the color of the pixel at (x, y).
+// At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
+// At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
+func (img *Image128) At(x int, y int) color.Color {
+	o := img.offset(x, y)
+	if o < 0 {
+		return color.RGBA{}
+	}
+	img.at++
+	return img.pix[o]
 }
 
 func (img *Image128) offset(x, y int) int {
@@ -36,15 +51,6 @@ func (img *Image128) offset(x, y int) int {
 	ny := y - my
 	nx := x - mx
 	return ny*stride + nx
-}
-
-func (img *Image128) At(x int, y int) color.Color {
-	o := img.offset(x, y)
-	if o < 0 {
-		return color.RGBA{}
-	}
-	img.at++
-	return img.pix[o]
 }
 
 func (img *Image128) Set(x int, y int, c color.Color) {
